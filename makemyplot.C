@@ -1,4 +1,4 @@
-void makemyplot2(){
+void makemyplot(){
      TCanvas *c1 = new TCanvas("c1","Fluxos",200,10,700,500);
      auto pad = new TPad();
      c1->SetLogy();
