@@ -22,11 +22,10 @@ int main(int argc, char * argv[])
 	glbInit(argv[0]);
 	glbInitExperiment(AEDLFILE, &glb_experiment_list[0], &glb_num_of_exps);
 
-	ofstream outstdmu,outstde,outstdtau;
+	ofstream outstdmu,outstde;
 
-	outstdmu.open("probability_matter_DUNE_mu.dat");
-	outstde.open("probability_matter_DUNE_e.dat");
-	outstdtau.open("probability_matter_DUNE_tau.dat");
+	outstdmu.open("spectrum_DUNE_mu.dat");
+	outstde.open("spectrum_DUNE_e.dat");
 	
 	double dm21 = 7.55e-5;
 	double dm31 = 2.50e-3;
@@ -45,7 +44,7 @@ int main(int argc, char * argv[])
 	glbSetOscillationParameters(true_values);
 	glbSetRates();
 
-	double energy,probe,probmu,probtau; 
+	double energy,probmumu,probemu,probtaumu,probmue,probee,probtaue,fluxmu,fluxe,fluxtau; 
 	double emin= 0.25 ; //GeV
 	double emax=10 ; //GeV
 	double step= 3000;
@@ -53,21 +52,22 @@ int main(int argc, char * argv[])
 
 	for (energy=emin;energy<=emax;energy+=(emax-emin)/step)
 	{
-	  //probmu=glbVacuumProbability(2,2,+1,energy,L);
-	  //probe=glbVacuumProbability(2,1,+1,energy,L);
-	  //probtau=glbVacuumProbability(2,3,+1,energy,L);
-	  probmu=glbProfileProbability(0,2,2,+1,energy);
-	  probe=glbProfileProbability(0,2,1,+1,energy);
-	  probtau=glbProfileProbability(0,2,3,+1,energy);
-	  outstdmu<<energy<<"  "<<probmu<<endl;
-	  outstde<<energy<<"  "<<probe<<endl;
-	  outstdtau<<energy<<"  "<<probtau<<endl;
+	  fluxe=glbFlux(0,0,energy,L,1,+1)/4.10414e+12;
+	  fluxmu=glbFlux(0,0,energy,L,2,+1)/4.10414e+12;
+	  fluxtau=glbFlux(0,0,energy,L,3,+1)/4.10414e+12; 
+	  probmumu=glbProfileProbability(0,2,2,+1,energy);
+	  probemu=glbProfileProbability(0,1,2,+1,energy);
+	  probtaumu=glbProfileProbability(0,3,2,+1,energy);
+	  probmue=glbProfileProbability(0,2,1,+1,energy);
+	  probee=glbProfileProbability(0,1,1,+1,energy);
+	  probtaue=glbProfileProbability(0,3,1,+1,energy);
+	  outstdmu<<energy<<"  "<<log10(probmumu*fluxmu+probemu*fluxe+probtaumu*fluxtau)<<endl;
+	  outstde<<energy<<"  "<<log10(probmue*fluxmu+probee*fluxe+probtaue*fluxtau)<<endl;
 	}
 
 
 	outstdmu.close();
 	outstde.close();
-	outstdtau.close();
 	glbFreeParams(true_values);
  	return 0;
 
